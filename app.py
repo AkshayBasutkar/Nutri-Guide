@@ -32,7 +32,7 @@ subjects = {
     "Additional mathematics (Non-credit, optional)": 0
 }
 
-st.title("SGPA Calculator (Marks-Based)")
+st.title("SGPA Calculator")
 
 st.write("""
 Enter your marks (out of 100) for each subject below.
