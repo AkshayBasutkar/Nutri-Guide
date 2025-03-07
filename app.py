@@ -3,7 +3,7 @@ import streamlit as st
 def marks_to_grade(marks: float) -> float:
     """
     Convert marks (0–100) to a grade on a 10-point scale.
-    Adjust the thresholds as per your institution's grading policy.
+    Adjust these thresholds as needed.
     """
     if marks >= 90:
         return 10
@@ -39,16 +39,13 @@ Enter your marks (out of 100) for each subject below.
 We'll convert them to a grade (0–10 scale) and then compute your SGPA.
 """)
 
-# Create input fields for each subject using session state.
+# Dictionary to store the computed grade for each subject
 grades = {}
 
 for subject, credit in subjects.items():
-    if credit > 0:
-        st.subheader(f"{subject} [{credit} credits]")
-    else:
-        st.subheader(f"{subject} [No credit]")
+    st.subheader(f"{subject} [{credit} credits]" if credit > 0 else f"{subject} [No credit]")
     
-    # Use the subject name as the key for session state
+    # Use the subject name as the key in session state.
     marks = st.number_input(
         f"Enter marks for {subject} (0–100):",
         min_value=0, 
@@ -57,11 +54,12 @@ for subject, credit in subjects.items():
         step=1,
         key=subject
     )
-    # Convert marks to grade and store
+    
+    # Convert marks to grade
     grade = marks_to_grade(marks)
     grades[subject] = grade
 
-# Layout for the buttons in two columns
+# Layout the buttons in two columns
 col1, col2 = st.columns(2)
 
 with col1:
@@ -82,7 +80,8 @@ with col1:
 
 with col2:
     if st.button("Clear Form"):
-        # Reset all input fields by updating session state for each subject
+        # Reset each subject's session state value if it exists.
         for subject in subjects:
-            st.session_state[subject] = 0
-        st.experimental_rerun()  # Rerun the app to reflect cleared values
+            if subject in st.session_state:
+                st.session_state[subject] = 0
+        st.experimental_rerun()  # Rerun the app to reflect the reset values
