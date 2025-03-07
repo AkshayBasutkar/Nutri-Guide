@@ -39,39 +39,50 @@ Enter your marks (out of 100) for each subject below.
 We'll convert them to a grade (0–10 scale) and then compute your SGPA.
 """)
 
-# To store the computed grade (out of 10) for each subject
+# Create input fields for each subject using session state.
 grades = {}
 
 for subject, credit in subjects.items():
-    st.subheader(f"{subject} [{credit} credits]" if credit > 0 else f"{subject} [No credit]")
+    if credit > 0:
+        st.subheader(f"{subject} [{credit} credits]")
+    else:
+        st.subheader(f"{subject} [No credit]")
     
-    # Input for marks
+    # Use the subject name as the key for session state
     marks = st.number_input(
         f"Enter marks for {subject} (0–100):",
         min_value=0, 
         max_value=100, 
-        value=0, 
+        value=st.session_state.get(subject, 0),
         step=1,
-        key=subject  # Use the subject as a unique key for Streamlit
+        key=subject
     )
-    
-    # Convert marks to grade
+    # Convert marks to grade and store
     grade = marks_to_grade(marks)
     grades[subject] = grade
 
-# Button to calculate SGPA
-if st.button("Calculate SGPA"):
-    total_credits = 0
-    total_grade_points = 0
-    
-    for subject, credit in subjects.items():
-        # Only include subjects that have credits
-        if credit > 0:
-            total_grade_points += grades[subject] * credit
-            total_credits += credit
-    
-    if total_credits > 0:
-        sgpa = total_grade_points / total_credits
-        st.success(f"Your SGPA is: **{sgpa:.2f}**")
-    else:
-        st.error("No credit-bearing subjects found. Cannot calculate SGPA.")
+# Layout for the buttons in two columns
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Calculate SGPA"):
+        total_credits = 0
+        total_grade_points = 0
+        
+        for subject, credit in subjects.items():
+            if credit > 0:
+                total_grade_points += grades[subject] * credit
+                total_credits += credit
+        
+        if total_credits > 0:
+            sgpa = total_grade_points / total_credits
+            st.success(f"Your SGPA is: **{sgpa:.2f}**")
+        else:
+            st.error("No credit-bearing subjects found. Cannot calculate SGPA.")
+
+with col2:
+    if st.button("Clear Form"):
+        # Reset all input fields by updating session state for each subject
+        for subject in subjects:
+            st.session_state[subject] = 0
+        st.experimental_rerun()  # Rerun the app to reflect cleared values
