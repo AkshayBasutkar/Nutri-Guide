@@ -3,47 +3,45 @@ import streamlit as st
 st.title("SGPA Calculator")
 
 st.write("""
-Enter the grade points for each subject. In this example:
-- Most subjects have 3 credits.
-- Data Structures has 4 credits.
-- Additional Maths is a non-credit course (it will not affect the SGPA).
+Enter the grade points (on a 0–10 scale) for each subject below.
+The SGPA is calculated using the credit-weighted average of all credit courses.
 """)
 
-# Define subjects with their respective credit values
+# Define the subjects and their credit values
 subjects = {
-    "Subject 1": 3,
-    "Subject 2": 3,
-    "Subject 3": 3,
+    "Mathematical Foundation for Machine Learning": 3,
+    "Computer Organisation and Architecture": 3,
     "Data Structures": 4,
-    "Additional Maths": 0,  # Non-credit course
-    "Subject 4": 3,
-    "Subject 5": 3
+    "Probability and Statistics for Machine Learning": 3,
+    "Object Oriented Programming": 3,
+    "Database Management": 3,
+    "Theoretical Foundations of Computation": 3,
+    "Additional Mathematics (Optional, Non-credit)": 0
 }
 
-# Dictionary to hold the entered grade points for each subject
+# Dictionary to store the input scores for each subject
 scores = {}
 
-# Create input fields for each subject
+# Create number inputs for each subject
 for subject, credit in subjects.items():
     if credit == 0:
-        st.write(f"**{subject}** (Non-credit course)")
+        st.write(f"**{subject}** (Optional, Non-credit)")
     else:
         st.write(f"**{subject}** ({credit} credits)")
-    score = st.number_input(f"Enter grade points for {subject}:", min_value=0.0, max_value=10.0, value=0.0, step=0.1)
-    scores[subject] = score
+    # Using number input to get grade points; you can adjust min, max, and step as needed
+    scores[subject] = st.number_input(f"Enter grade points for {subject}:", min_value=0.0, max_value=10.0, value=0.0, step=0.1)
 
 # Button to trigger SGPA calculation
 if st.button("Calculate SGPA"):
-    total_weighted = 0
+    total_weighted_points = 0
     total_credits = 0
-    # Calculate weighted sum only for courses with credits
     for subject, credit in subjects.items():
         if credit > 0:
-            total_weighted += scores[subject] * credit
+            total_weighted_points += scores[subject] * credit
             total_credits += credit
 
     if total_credits > 0:
-        sgpa = total_weighted / total_credits
+        sgpa = total_weighted_points / total_credits
         st.success(f"Your SGPA is: **{sgpa:.2f}**")
     else:
         st.error("No credit courses entered. Cannot calculate SGPA.")
